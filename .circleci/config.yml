@@ -1,13 +1,13 @@
-# Java Gradle CircleCI 2.0 configuration file
+# Ruby CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-java/ for more details
+# Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
 version: 2
 jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/ruby:2.5.3-node-browsers
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -16,34 +16,43 @@ jobs:
 
     working_directory: ~/repo
 
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-
     steps:
       - checkout
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: gradle dependencies
+      - run:
+          name: install dependencies
+          command: |
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
 
       - save_cache:
           paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-          
+            - ./vendor/bundle
+          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+
       - run:
-          name: Install hiptest-publisher
+          name: update features files with hiptest-publisher
           command: |
-            pwd
-            bundle check || bundle install --path vendor/bundle
+            echo 'export PATH=$PATH:.' >> $PATH
+            echo 'export SECRET_TOKEN=24217329994854315832799885021744245684935169348830984566' >> $SECRET_TOKEN
             gem install hiptest-publisher
-        
+            source $PATH
+            source $SECRET_TOKEN
+            hiptest-publisher --token $SECRET_TOKEN -c rspec.conf --test-run-id=243901 --only=tests
+
       # run tests!
-      - run: gradle test
+      - run:
+          name: run tests
+          command:
+            bundle exec rspec --format RspecJunitFormatter -o report.xml
+            
+      - run:
+          name: run tests
+          command:
+            hiptest-publisher -c rspec.conf --token=$SECRET_TOKEN --push=report.xml --test-run-id=243901
