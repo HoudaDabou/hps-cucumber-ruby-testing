@@ -37,6 +37,13 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
-
+          
+      - run:
+          name: Install hiptest-publisher
+          command: |
+            pwd
+            bundle check || bundle install --path vendor/bundle
+            gem install hiptest-publisher
+        
       # run tests!
       - run: gradle test
