@@ -34,7 +34,6 @@ jobs:
       - run:
           name: update tests with hiptest-publisher
           command: |
-            echo 'export PATH=$PATH:.' >> $PATH
             echo "#! /bin/bash" > ./hiptest-publisher
             echo 'docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"' >> ./hiptest-publisher
             chmod +x ./hiptest-publisher
