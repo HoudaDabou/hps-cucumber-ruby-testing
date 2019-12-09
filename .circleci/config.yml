@@ -35,12 +35,12 @@ jobs:
           name: update tests with hiptest-publisher
           command: |
             gem install hiptest-publisher
-            hiptest-publisher --token=${SECRET_TOKEN} -c cucumber.conf --test-run-id=${TEST_RUN_ID} --only=tests
+            hiptest-publisher --token=${SECRET_TOKEN} -c cucumber.conf --only=features,step_definitions
       
       - run:
           name: regenerate tests and fetch UIDs
           command:
-            hiptest-publisher --token=${SECRET_TOKEN} -c cucumber.conf --test-run-id=${TEST_RUN_ID} --only=tests
+            hiptest-publisher --token=${SECRET_TOKEN} -c cucumber.conf --test-run-id=${TEST_RUN_ID} --without=actionwords
 
       # run tests!
       - run:
@@ -51,4 +51,4 @@ jobs:
       - run:
           name: push test results file
           command:
-            hiptest-publisher -c cucumber.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID}
+            hiptest-publisher -c cucumber.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID} --push-format junit
