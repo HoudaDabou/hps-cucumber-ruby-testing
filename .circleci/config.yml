@@ -46,9 +46,9 @@ jobs:
       - run:
           name: run tests
           command:
-            bundle exec cucumber --format junit --out results
+            bundle exec cucumber --format json --out results.json
             
       - run:
           name: push test results file
           command:
-            hiptest-publisher -c cucumber.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID} --push-format junit
+            hiptest-publisher -c cucumber.conf --token=${SECRET_TOKEN} --push="results.json" --test-run-id=${TEST_RUN_ID} --push-format cucumber-json
