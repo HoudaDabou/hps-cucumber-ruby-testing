@@ -9,11 +9,6 @@ jobs:
       # specify the version you desire here
       - image: circleci/ruby:2.5.1-node-browsers
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
 
     steps:
@@ -40,14 +35,15 @@ jobs:
           name: update tests with hiptest-publisher
           command: |
             echo 'export PATH=$PATH:.' >> $PATH
-            gem install hiptest-publisher
-            source $PATH
-            $PATH/hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
+            echo "#! /bin/bash" > ./hiptest-publisher
+            echo 'docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"' >> ./hiptest-publisher
+            chmod +x ./hiptest-publisher
+            ./hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
       
       - run:
           name: regenerate tests and fetch UIDs
           command:
-            $PATH/hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
+            ./hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
 
       # run tests!
       - run:
@@ -58,4 +54,4 @@ jobs:
       - run:
           name: push test results file
           command:
-            $PATH/hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID}
+            ./hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID}
