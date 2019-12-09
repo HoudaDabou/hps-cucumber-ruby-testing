@@ -40,11 +40,11 @@ jobs:
           name: update features files with hiptest-publisher
           command: |
             echo 'export PATH=$PATH:.' >> $PATH
-            echo 'export SECRET_TOKEN=24217329994854315832799885021744245684935169348830984566' >> $SECRET_TOKEN
+            # echo 'export SECRET_TOKEN=24217329994854315832799885021744245684935169348830984566' >> $SECRET_TOKEN
             gem install hiptest-publisher
             source $PATH
-            source $SECRET_TOKEN
-            hiptest-publisher --token $SECRET_TOKEN -c rspec.conf --test-run-id=243901 --only=tests
+            # source $SECRET_TOKEN
+            hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=243901 --only=tests
 
       # run tests!
       - run:
@@ -55,4 +55,4 @@ jobs:
       - run:
           name: run tests
           command:
-            hiptest-publisher -c rspec.conf --token=$SECRET_TOKEN --push=report.xml --test-run-id=243901
+            hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push=report.xml --test-run-id=243901
