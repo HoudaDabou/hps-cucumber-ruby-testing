@@ -42,12 +42,12 @@ jobs:
             echo 'export PATH=$PATH:.' >> $PATH
             gem install hiptest-publisher
             source $PATH
-            hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
+            $PATH/hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
       
       - run:
           name: regenerate tests and fetch UIDs
           command:
-            hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
+            $PATH/hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
 
       # run tests!
       - run:
@@ -58,4 +58,4 @@ jobs:
       - run:
           name: push test results file
           command:
-            hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID}
+            $PATH/hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID}
