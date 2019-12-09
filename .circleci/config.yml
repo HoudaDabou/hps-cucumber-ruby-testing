@@ -37,22 +37,25 @@ jobs:
           key: v1-dependencies-{{ checksum "Gemfile.lock" }}
 
       - run:
-          name: update features files with hiptest-publisher
+          name: update tests with hiptest-publisher
           command: |
             echo 'export PATH=$PATH:.' >> $PATH
-            # echo 'export SECRET_TOKEN=24217329994854315832799885021744245684935169348830984566' >> $SECRET_TOKEN
             gem install hiptest-publisher
             source $PATH
-            # source $SECRET_TOKEN
-            hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=243901 --only=tests
+            hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
+      
+      - run:
+          name: regenerate tests and fetch UIDs
+          command:
+            hiptest-publisher --token=${SECRET_TOKEN} -c rspec.conf --test-run-id=${TEST_RUN_ID} --only=tests
 
       # run tests!
       - run:
           name: run tests
           command:
-            bundle exec rspec --format RspecJunitFormatter -o report.xml
+            bundle exec cucumber --format junit --out results
             
       - run:
-          name: run tests
+          name: push test results file
           command:
-            hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push=report.xml --test-run-id=243901
+            hiptest-publisher -c rspec.conf --token=${SECRET_TOKEN} --push="results/TEST-*.xml" --test-run-id=${TEST_RUN_ID}
