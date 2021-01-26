@@ -41,9 +41,12 @@ jobs:
       env:
         GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
     - name: Export feature files
+      run: |
         gem install hiptest-publisher
         hiptest-publisher -c cucumber.conf --token=$SECRET_TOKEN --only=features,step_definitions --test-run-id=$TEST_RUN_ID
     - name: Run tests
+      run:
        bundle exec cucumber --format json --out results.json
     - name: Pust cucumber-json report file to CucumberStudio
+      run:
         hiptest-publisher -c cucumber.conf --token=$SECRET_TOKEN --push=results.json --test-run-id=$TEST_RUN_ID
