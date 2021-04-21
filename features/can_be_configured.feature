@@ -12,6 +12,7 @@ Feature: Can be configured
        - 1: water hardness
        - 2: grinder
       """
+      And voilà
 
   Scenario: Default settings
     Given the coffee machine is started
