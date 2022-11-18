@@ -15,3 +15,4 @@ Feature: Eating Cucumbers new
     When I take a coffee
     Then coffee should be served
     And the coffee machine is started
+    And voilà
